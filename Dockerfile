@@ -9,6 +9,7 @@ WORKDIR /var/www
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
+	libssl-dev \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
@@ -19,6 +20,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
+	nodejs \
+	npm \
 	&& docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
 	&& docker-php-ext-install -j$(nproc) pdo_mysql
@@ -26,6 +29,10 @@ RUN apt-get update && apt-get install -y \
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install NVM
+RUN npm cache clean -f
+
+RUN npm install -g n && n stable
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
